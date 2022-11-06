@@ -1,64 +1,52 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
 
-/**
- * Array based storage for Resumes
- */
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
+    private int size = 0;
 
     void clear() {
-        for (int i = 0; i < storage.length; i++) {
+        for (int i = 0; i < size; i++) {
             if (storage[i] != null) storage[i] = null;
-            else break;
         }
+        size = 0;
     }
 
     void save(Resume r) {
-        for (int i = 0; i < 10000; i++) {
-            if (storage[i] != null) {
-                if (Objects.equals(storage[i].uuid, r.uuid)) {
-                    System.out.println("Ошибка. Элелемент с таким uuid уже существует");
+        boolean unique = true;
+        if (size == 0) {
+            storage[0] = r;
+            size++;
+        } else {
+            for (int i = 0; i <= size; i++) {
+                if (i <= size - 1) {
+                    if (Objects.equals(storage[i].uuid, r.uuid)) break;
+                } else if (i == size) {
+                    storage[i] = r;
+                    size++;
                     break;
                 }
-            }
-            if (storage[i] == null) {
-                storage[i] = r;
-                break;
             }
         }
     }
 
+
     Resume get(String uuid) {
-        if (storage[0] == null) return null;
-        else {
-            int i = 0;
-            while (storage[i] != null) {
-                if (Objects.equals(storage[i].uuid, uuid)) return storage[i];
-                i++;
-            }
-            return null;
+        int i = 0;
+        while (storage[i] != null) {
+            if (Objects.equals(storage[i].uuid, uuid)) return storage[i];
+            i++;
         }
+        return null;
     }
 
     void delete(String uuid) {
-        if (storage[0] == null) System.out.println("В массиве нет ни одной записи");
-        else {
-            for (int i = 0; i < storage.length; i++) {
-                if (Objects.equals(storage[i].uuid, uuid) && storage[i + 1] == null) {
-                    storage[i] = null;
-                    break;
-                }
-                else if (Objects.equals(storage[i].uuid, uuid)) {
-                    storage[i] = null;
-                    for (int j = i; j < storage.length; j++) {
-                        if (storage[j + 1] == null) break;
-                        storage[j] = storage[j + 1];
-                        storage[j+1] = null;
-                    }
-                }
-                if(storage[i+1] == null)break;
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(storage[i].uuid, uuid)) {
+                storage[i] = storage[size - 1];
+                storage[size - 1] = null;
+                size--;
+                break;
             }
         }
     }
@@ -67,26 +55,11 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        int storage_size = 0;
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null) storage_size++;
-            else break;
-        }
-        Resume[] _storage = new Resume[storage_size];
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null) _storage[i] = storage[i];
-            else break;
-        }
-
-        return _storage;
+        Resume[] resumes = Arrays.copyOf(storage, size);
+        return resumes;
     }
 
     int size() {
-        int size = 0;
-        for (int i = 0; i < storage.length; i++) {
-            if (storage[i] != null) size++;
-            else break;
-        }
         return size;
     }
 
