@@ -45,18 +45,20 @@ public class ArrayStorage {
     void delete(String uuid) {
         if (storage[0] == null) System.out.println("В массиве нет ни одной записи");
         else {
-            int i = 0;
-            while (storage[i] != null) {
-                if (Objects.equals(storage[i].uuid, uuid)) {
+            for (int i = 0; i < storage.length; i++) {
+                if (Objects.equals(storage[i].uuid, uuid) && storage[i + 1] == null) {
                     storage[i] = null;
-                    if (storage[i + 1] != null) {
-                        for (int k = i; storage[k + 1] != null; k++) {
-                            storage[k] = storage[k + 1];
-                        }
-                    }
                     break;
                 }
-                i++;
+                else if (Objects.equals(storage[i].uuid, uuid)) {
+                    storage[i] = null;
+                    for (int j = i; j < storage.length; j++) {
+                        if (storage[j + 1] == null) break;
+                        storage[j] = storage[j + 1];
+                        storage[j+1] = null;
+                    }
+                }
+                if(storage[i+1] == null)break;
             }
         }
     }
